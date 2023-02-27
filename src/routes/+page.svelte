@@ -10,7 +10,7 @@
 		p5.setup = () => {
 			p5.createCanvas(width, height);
 			p5.background(200);
-			p5.frameRate(60);
+			p5.frameRate(120);
             p5.fill(0, color[3]);
             p5.noStroke();
 		};
@@ -56,7 +56,7 @@
         color[2] = parseInt(hexColor.slice(5, 7), 16);
     }} />
 	Size ({brushSize}): <input id="brushSlider" type="range" min="1" max="100" value="4" class="slider" />
-    Opacity ({color[3]}): <input id="opacitySlider" type="range" min="1" max="100" value={color[3]} class="slider" />
+    Opacity ({color[3]}): <input id="opacitySlider" type="range" min="1" max="255" value={color[3]} class="slider" />
 	<p>
 		Visit
 		<a href="https://github.com/CodyWMitchell/pal-pad-ui" class="text-blue-500 underline"
