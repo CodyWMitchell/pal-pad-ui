@@ -11,8 +11,7 @@
 			p5.createCanvas(width, height);
 			p5.background(200);
 			p5.frameRate(120);
-            p5.fill(0, color[3]);
-            p5.noStroke();
+            p5.stroke(0, color[3]);
 		};
 
 		p5.mouseDragged = () => {
@@ -20,8 +19,9 @@
             if (p5.mouseX < 0 || p5.mouseX > width || p5.mouseY < 0 || p5.mouseY > height) {
                 return;
             }
-            p5.fill(color[0], color[1], color[2], color[3]);
-			p5.ellipse(p5.mouseX, p5.mouseY, brushSize);
+            p5.stroke(color[0], color[1], color[2], color[3]);
+            p5.strokeWeight(brushSize);
+			p5.line(p5.mouseX, p5.mouseY, p5.pmouseX, p5.pmouseY);
 		};
 
 		p5.keyPressed = () => {
