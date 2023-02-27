@@ -1,10 +1,12 @@
 <script>
 	import P5 from 'p5-svelte';
+    import Pressure from 'pressure';
 
 	let width = 700;
 	let height = 700;
 	let brushSize = 30;
     let color = [0, 0, 0, 100];
+    let pressure = 0;
 
 	let sketch = (p5) => {
         const interpolateLine = (startX, startY, endX, endY, circleSize) => {
@@ -25,6 +27,18 @@
 			p5.frameRate(120);
             p5.fill(0, color[3]);
             p5.noStroke();
+
+            // set up pressure.js
+            Pressure.set('canvas', {
+                change: (force, event) => {
+                    pressure = force;
+                    brushSize = 30 * force;
+                },
+                end: () => {
+                    pressure = 0;
+                    brushSize = 30;
+                }
+            });
 		};
 
 		p5.mouseDragged = () => {
@@ -67,8 +81,9 @@
         color[1] = parseInt(hexColor.slice(3, 5), 16);
         color[2] = parseInt(hexColor.slice(5, 7), 16);
     }} />
-	Size ({brushSize}): <input id="brushSlider" type="range" min="1" max="100" value="4" class="slider" />
+	Size ({Math.floor(brushSize)}): <input id="brushSlider" type="range" min="1" max="100" value="4" class="slider" />
     Opacity ({color[3]}): <input id="opacitySlider" type="range" min="1" max="255" value={color[3]} class="slider" />
+    Pressure: {Math.floor(pressure*100)}
 	<p>
 		Visit
 		<a href="https://github.com/CodyWMitchell/pal-pad-ui" class="text-blue-500 underline"

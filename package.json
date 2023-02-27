@@ -23,6 +23,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"p5-svelte": "^3.1.2"
+		"p5-svelte": "^3.1.2",
+		"pressure": "^2.2.0"
 	}
 }
