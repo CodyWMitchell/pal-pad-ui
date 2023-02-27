@@ -4,43 +4,42 @@
 	let width = 700;
 	let height = 700;
 	let brushSize = 30;
+    let color = [0, 0, 0, 100];
 
 	let sketch = (p5) => {
 		p5.setup = () => {
 			p5.createCanvas(width, height);
 			p5.background(200);
 			p5.frameRate(60);
+            p5.fill(0, color[3]);
+            p5.noStroke();
 		};
 
 		p5.mouseDragged = () => {
-			p5.strokeWeight(brushSize);
-			p5.line(p5.mouseX, p5.mouseY, p5.pmouseX, p5.pmouseY);
+            // check that the mouse is on the canvas
+            if (p5.mouseX < 0 || p5.mouseX > width || p5.mouseY < 0 || p5.mouseY > height) {
+                return;
+            }
+            p5.fill(color[0], color[1], color[2], color[3]);
+			p5.ellipse(p5.mouseX, p5.mouseY, brushSize);
 		};
 
 		p5.keyPressed = () => {
+            // clear the canvas
 			if (p5.keyCode === 32) {
 				p5.background(200);
 			}
 		};
 
-		let randomColor = document.getElementById('randomColor');
-		randomColor.addEventListener('click', () => {
-			let color = [p5.random(255), p5.random(255), p5.random(255)];
-			p5.stroke(color);
-
-			randomColor.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-
-			if (color[0] + color[1] + color[2] < (255 * 3) / 2) {
-				randomColor.style.color = 'white';
-			} else {
-				randomColor.style.color = 'black';
-			}
-		});
-
 		let brushSlider = document.getElementById('brushSlider');
 		brushSlider.addEventListener('input', () => {
 			brushSize = brushSlider.value;
 		});
+
+        let opacitySlider = document.getElementById('opacitySlider');
+        opacitySlider.addEventListener('input', () => {
+            color[3] = Number(opacitySlider.value);
+        });
 	};
 </script>
 
@@ -50,13 +49,14 @@
 	<div class="w-full flex justify-center p-2">
 		<P5 {sketch} />
 	</div>
-	<button
-		id="randomColor"
-		class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-	>
-		Random Color
-	</button>
-	Size: <input id="brushSlider" type="range" min="1" max="100" value="4" class="slider" />
+    Color: <input type="color" value="#000000" on:change={(e) => {
+        let hexColor = e.target.value;
+        color[0] = parseInt(hexColor.slice(1, 3), 16);
+        color[1] = parseInt(hexColor.slice(3, 5), 16);
+        color[2] = parseInt(hexColor.slice(5, 7), 16);
+    }} />
+	Size ({brushSize}): <input id="brushSlider" type="range" min="1" max="100" value="4" class="slider" />
+    Opacity ({color[3]}): <input id="opacitySlider" type="range" min="1" max="100" value={color[3]} class="slider" />
 	<p>
 		Visit
 		<a href="https://github.com/CodyWMitchell/pal-pad-ui" class="text-blue-500 underline"
