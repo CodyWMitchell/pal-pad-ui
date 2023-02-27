@@ -7,11 +7,24 @@
     let color = [0, 0, 0, 100];
 
 	let sketch = (p5) => {
+        const interpolateLine = (startX, startY, endX, endY, circleSize) => {
+            let distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            let angle = Math.atan2(endY - startY, endX - startX);
+            let x = startX;
+            let y = startY;
+            for (let i = 0; i < distance; i += circleSize) {
+                p5.ellipse(x, y, brushSize, brushSize);
+                x += Math.cos(angle) * circleSize;
+                y += Math.sin(angle) * circleSize;
+            }
+        }
+
 		p5.setup = () => {
 			p5.createCanvas(width, height);
 			p5.background(200);
 			p5.frameRate(120);
-            p5.stroke(0, color[3]);
+            p5.fill(0, color[3]);
+            p5.noStroke();
 		};
 
 		p5.mouseDragged = () => {
@@ -19,9 +32,8 @@
             if (p5.mouseX < 0 || p5.mouseX > width || p5.mouseY < 0 || p5.mouseY > height) {
                 return;
             }
-            p5.stroke(color[0], color[1], color[2], color[3]);
-            p5.strokeWeight(brushSize);
-			p5.line(p5.mouseX, p5.mouseY, p5.pmouseX, p5.pmouseY);
+            p5.fill(color[0], color[1], color[2], color[3]);
+            interpolateLine(p5.pmouseX, p5.pmouseY, p5.mouseX, p5.mouseY, brushSize/20);
 		};
 
 		p5.keyPressed = () => {
