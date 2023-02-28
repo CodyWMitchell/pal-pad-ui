@@ -90,11 +90,8 @@
 				color[2] = parseInt(hexColor.slice(5, 7), 16);
 			}}
 		/>
-		Size ({Math.floor(brushSize)}):
-		<input id="brushSlider" type="range" min="1" max="150" class="slider" />
-		Opacity ({color[3]}):
-		<input id="opacitySlider" type="range" min="1" max="75" value={color[3]} class="slider" />
-		Pressure: {Math.floor(pressure * 100)}
+		<input id="brushSlider" type="range" min="1" max="150" class="xl:vertical-slider" />
+		<input id="opacitySlider" type="range" min="1" max="75" value={color[3]} class="xl:vertical-slider" />
 		<button id="clearButton" class="bg-blue-500 p-2 rounded text-white font-bold hover:bg-blue-700"
 			>Clear</button
 		>
