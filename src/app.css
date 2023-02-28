@@ -8,3 +8,7 @@
         writing-mode: bt-lr;
     }
 }
+
+canvas {
+    @apply drop-shadow-lg;
+}

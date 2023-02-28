@@ -7,6 +7,7 @@
 	let brushSize = 30;
 	let color = [0, 0, 0, 100];
 	let pressure = 0;
+	let paperTexture;
 
 	let sketch = (p5) => {
 		const interpolateLine = (startX, startY, endX, endY, circleSize, numCircles) => {
@@ -21,7 +22,12 @@
 
 		function clearCanvas() {
 			p5.background(50);
+			p5.image(paperTexture, 0, 0, width, height);
 		}
+
+		p5.preload = () => {
+			paperTexture = p5.loadImage('/paper.jpg');
+		};
 
 		p5.setup = () => {
 			p5.createCanvas(width, height);
@@ -78,9 +84,9 @@
 	};
 </script>
 
-<div class="w-full h-screen text-white text-lg p-4 flex flex-col xl:flex-row bg-neutral-900">
-	<div class="flex flex-row xl:flex-col gap-1">
-		Color:<input
+<div class="w-full h-screen text-white flex flex-col xl:flex-row bg-neutral-900">
+	<div class="flex flex-row xl:flex-col gap-2 bg-neutral-800 p-4 justify-center items-center">
+		<input
 			type="color"
 			value="#000000"
 			on:change={(e) => {
@@ -91,12 +97,19 @@
 			}}
 		/>
 		<input id="brushSlider" type="range" min="1" max="150" class="xl:vertical-slider" />
-		<input id="opacitySlider" type="range" min="1" max="75" value={color[3]} class="xl:vertical-slider" />
-		<button id="clearButton" class="bg-blue-500 p-2 rounded text-white font-bold hover:bg-blue-700"
-			>Clear</button
+		<input
+			id="opacitySlider"
+			type="range"
+			min="1"
+			max="75"
+			value={color[3]}
+			class="xl:vertical-slider"
+		/>
+		<button id="clearButton" class="bg-neutral-700 w-12 aspect-square rounded text-white font-bold hover:bg-neutral-900"
+			>clear</button
 		>
 	</div>
-	<div class="w-full flex justify-center p-2">
+	<div class="w-full flex justify-center items-center p-2">
 		<P5 {sketch} />
 	</div>
 </div>
