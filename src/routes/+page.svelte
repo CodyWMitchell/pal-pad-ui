@@ -2,30 +2,30 @@
 	import P5 from 'p5-svelte';
 	import Pressure from 'pressure';
 
-	let width = 700;
-	let height = 700;
+	let width = 1280;
+	let height = 720;
 	let brushSize = 30;
 	let color = [0, 0, 0, 100];
 	let pressure = 0;
 
 	let sketch = (p5) => {
 		const interpolateLine = (startX, startY, endX, endY, circleSize, numCircles) => {
-			let distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-			let angle = Math.atan2(endY - startY, endX - startX);
-			let x = startX;
-			let y = startY;
-			for (let i = 0; i < distance; i += distance / numCircles) {
-				p5.ellipse(x, y, circleSize, circleSize);
-				x += (Math.cos(angle) * distance) / numCircles;
-				y += (Math.sin(angle) * distance) / numCircles;
-			}
+            let xDiff = endX - startX;
+            let yDiff = endY - startY;
+            let xStep = xDiff / numCircles;
+            let yStep = yDiff / numCircles;
+            for (let i = 0; i < numCircles; i++) {
+                p5.ellipse(startX + xStep * i, startY + yStep * i, circleSize, circleSize);
+            }
 		};
+        
+        function clearCanvas() {
+            p5.background(220);
+        }
 
 		p5.setup = () => {
 			p5.createCanvas(width, height);
-			p5.background(200);
-			p5.frameRate(120);
-			p5.fill(0, color[3]);
+			clearCanvas();
 			p5.noStroke();
 
 			// set up pressure.js
@@ -57,7 +57,7 @@
 		p5.keyPressed = () => {
 			// clear the canvas
 			if (p5.keyCode === 32) {
-				p5.background(200);
+				clearCanvas();
 			}
 		};
 
@@ -70,6 +70,11 @@
 		opacitySlider.addEventListener('input', () => {
 			color[3] = Number(opacitySlider.value);
 		});
+
+        let clearButton = document.getElementById('clearButton');
+        clearButton.addEventListener('click', () => {
+            clearCanvas(p5);
+        });
 	};
 </script>
 
@@ -90,10 +95,11 @@
 		}}
 	/>
 	Size ({Math.floor(brushSize)}):
-	<input id="brushSlider" type="range" min="1" max="50" class="slider" />
+	<input id="brushSlider" type="range" min="1" max="150" class="slider" />
 	Opacity ({color[3]}):
-	<input id="opacitySlider" type="range" min="1" max="100" value={color[3]} class="slider" />
+	<input id="opacitySlider" type="range" min="1" max="75" value={color[3]} class="slider" />
 	Pressure: {Math.floor(pressure * 100)}
+    <button id="clearButton" class="bg-blue-500 p-2 rounded text-white font-bold hover:bg-blue-700">Clear</button>
 	<p>
 		Visit
 		<a href="https://github.com/CodyWMitchell/pal-pad-ui" class="text-blue-500 underline"
