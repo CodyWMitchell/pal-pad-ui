@@ -12,3 +12,10 @@
 canvas {
     @apply drop-shadow-lg;
 }
+
+html,
+body {
+  user-select: none;
+  touch-action: none;
+  -webkit-user-select: none;
+}
