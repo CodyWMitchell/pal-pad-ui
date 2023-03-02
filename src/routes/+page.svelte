@@ -7,21 +7,27 @@
 	let brushSize = 30;
 	let color = [0, 0, 0, 100];
 	let pressure = 0;
+	let paperTexture;
 
 	let sketch = (p5) => {
 		const interpolateLine = (startX, startY, endX, endY, circleSize, numCircles) => {
-            let xDiff = endX - startX;
-            let yDiff = endY - startY;
-            let xStep = xDiff / numCircles;
-            let yStep = yDiff / numCircles;
-            for (let i = 0; i < numCircles; i++) {
-                p5.ellipse(startX + xStep * i, startY + yStep * i, circleSize, circleSize);
-            }
+			let xDiff = endX - startX;
+			let yDiff = endY - startY;
+			let xStep = xDiff / numCircles;
+			let yStep = yDiff / numCircles;
+			for (let i = 0; i < numCircles; i++) {
+				p5.ellipse(startX + xStep * i, startY + yStep * i, circleSize, circleSize);
+			}
 		};
-        
-        function clearCanvas() {
-            p5.background(220);
-        }
+
+		function clearCanvas() {
+			p5.background(50);
+			p5.image(paperTexture, 0, 0, width, height);
+		}
+
+		p5.preload = () => {
+			paperTexture = p5.loadImage('/paper.jpg');
+		};
 
 		p5.setup = () => {
 			p5.createCanvas(width, height);
@@ -71,40 +77,39 @@
 			color[3] = Number(opacitySlider.value);
 		});
 
-        let clearButton = document.getElementById('clearButton');
-        clearButton.addEventListener('click', () => {
-            clearCanvas(p5);
-        });
+		let clearButton = document.getElementById('clearButton');
+		clearButton.addEventListener('click', () => {
+			clearCanvas(p5);
+		});
 	};
 </script>
 
-<div class="w-full text-center justify-center mt-4">
-	<h1 class="text-xl font-bold">Welcome to Pal Pad</h1>
-	<p>click and drag to draw, press [SPACE] to clear</p>
-	<div class="w-full flex justify-center p-2">
+<div class="w-full h-screen text-white flex flex-col xl:flex-row bg-neutral-900">
+	<div class="flex flex-row xl:flex-col gap-2 bg-neutral-800 p-4 justify-center items-center">
+		<input
+			type="color"
+			value="#000000"
+			on:change={(e) => {
+				let hexColor = e.target.value;
+				color[0] = parseInt(hexColor.slice(1, 3), 16);
+				color[1] = parseInt(hexColor.slice(3, 5), 16);
+				color[2] = parseInt(hexColor.slice(5, 7), 16);
+			}}
+		/>
+		<input id="brushSlider" type="range" min="1" max="150" class="xl:vertical-slider" />
+		<input
+			id="opacitySlider"
+			type="range"
+			min="1"
+			max="75"
+			value={color[3]}
+			class="xl:vertical-slider"
+		/>
+		<button id="clearButton" class="bg-neutral-700 w-12 aspect-square rounded text-white font-bold hover:bg-neutral-900"
+			>clear</button
+		>
+	</div>
+	<div class="w-full flex justify-center items-center p-2">
 		<P5 {sketch} />
 	</div>
-	Color:<input
-		type="color"
-		value="#000000"
-		on:change={(e) => {
-			let hexColor = e.target.value;
-			color[0] = parseInt(hexColor.slice(1, 3), 16);
-			color[1] = parseInt(hexColor.slice(3, 5), 16);
-			color[2] = parseInt(hexColor.slice(5, 7), 16);
-		}}
-	/>
-	Size ({Math.floor(brushSize)}):
-	<input id="brushSlider" type="range" min="1" max="150" class="slider" />
-	Opacity ({color[3]}):
-	<input id="opacitySlider" type="range" min="1" max="75" value={color[3]} class="slider" />
-	Pressure: {Math.floor(pressure * 100)}
-    <button id="clearButton" class="bg-blue-500 p-2 rounded text-white font-bold hover:bg-blue-700">Clear</button>
-	<p>
-		Visit
-		<a href="https://github.com/CodyWMitchell/pal-pad-ui" class="text-blue-500 underline"
-			>Our GitHub</a
-		>
-		to read the documentation
-	</p>
 </div>

@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .vertical-slider {
+        -webkit-appearance: slider-vertical;
+        writing-mode: bt-lr;
+    }
+}
+
+canvas {
+    @apply drop-shadow-lg;
+}
