@@ -5,6 +5,9 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 
+	import Fa from 'svelte-fa/src/fa.svelte';
+	import { faCopy } from '@fortawesome/free-regular-svg-icons';
+
 	let width = 1280;
 	let height = 720;
 	let brushSize = 30;
@@ -152,5 +155,10 @@
 	</div>
 	<div class="w-full flex justify-center items-center p-2">
 		<P5 {sketch} />
+	</div>
+	<div class="text-2xl">
+		<button class="text-blue-500" on:click={() => navigator.clipboard.writeText(`${window.location.origin}/?room=${roomID}`)}>
+			<Fa class="m-2" size="1.5x" icon={faCopy} />
+		</button>
 	</div>
 </div>
