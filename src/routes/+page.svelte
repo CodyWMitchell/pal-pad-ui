@@ -1,6 +1,9 @@
 <script>
 	import P5 from 'p5-svelte';
 	import Pressure from 'pressure';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	let width = 1280;
 	let height = 720;
@@ -8,7 +11,18 @@
 	let color = [0, 0, 0, 100];
 	let pressure = 0;
 	let paperTexture;
-
+	
+	let roomID;
+	if (browser) {
+			// check if the room urlParam is set, if not then generate a random room
+		roomID = $page.url.searchParams.get('room');
+		if (!roomID) {
+			roomID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+			$page.url.searchParams.set('room', roomID);
+			goto(`?${$page.url.searchParams.toString()}`);
+		}
+	}
+	
 	let sketch = (p5) => {
 		const interpolateLine = (startX, startY, endX, endY, circleSize, numCircles) => {
 			let xDiff = endX - startX;
@@ -58,6 +72,20 @@
 			}
 			p5.fill(color[0], color[1], color[2], color[3]);
 			interpolateLine(p5.pmouseX, p5.pmouseY, p5.mouseX, p5.mouseY, brushSize * (pressure + 1), 15);
+			
+			let lineData = {
+				startX: p5.pmouseX,
+				startY: p5.pmouseY,
+				endX: p5.mouseX,
+				endY: p5.mouseY,
+				size: brushSize * (pressure + 1),
+				color: color
+			};
+
+			console.log({
+				roomID,
+				lineData
+			})
 		};
 
 		p5.keyPressed = () => {
