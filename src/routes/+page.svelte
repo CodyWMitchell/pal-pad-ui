@@ -101,15 +101,16 @@
 
 			console.log('SOCKET EMIT: line')
 			console.log({
-				roomID,
-				color: color,
-				currentLine
+				"sketch_id": roomID,
+				"line": {
+					"color": color,
+					"points": currentLine
+				}
 			})
 
-			socket.emit('line', {
-				roomID,
-				color: color,
-				currentLine
+			socket.emit('line', roomID, {
+				"color": color,
+				"points": currentLine
 			});
 
 			currentLine = [];
@@ -118,6 +119,7 @@
 		p5.keyPressed = () => {
 			// clear the canvas
 			if (p5.keyCode === 32) {
+				socket.emit('clear', roomID);
 				clearCanvas();
 			}
 		};
@@ -146,6 +148,14 @@
 		socket.on('sketch', (data) => {
 			console.log('SOCKET: sketch')
 			console.log(data);
+			if (data) {
+				data.lines.forEach((line) => {
+					p5.fill(line.color[0], line.color[1], line.color[2], line.color[3]);
+					line.points.forEach((point) => {
+						interpolateLine(point.startX, point.startY, point.endX, point.endY, point.size, 15);
+					});
+				});
+			}
 		});
 
 		socket.on('clear', () => {
@@ -156,6 +166,12 @@
 		socket.on('sync', (data) => {
 			console.log('SOCKET: sync')
 			console.log(data);
+			if (data) {
+				p5.fill(data.color[0], data.color[1], data.color[2], data.color[3]);
+				data.points.forEach((point) => {
+					interpolateLine(point.startX, point.startY, point.endX, point.endY, point.size, 15);
+				});
+			}
 		});
 	};
 </script>
