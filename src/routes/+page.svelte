@@ -94,7 +94,7 @@
 
 		p5.mouseReleased = () => {
 			// check that the mouse is on the canvas
-			if (p5.mouseX < 0 || p5.mouseX > width || p5.mouseY < 0 || p5.mouseY > height) {
+			if (currentLine.length === 0) {
 				return;
 			}
 
