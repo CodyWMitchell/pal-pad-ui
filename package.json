@@ -26,6 +26,7 @@
 		"@fortawesome/free-regular-svg-icons": "^6.3.0",
 		"p5-svelte": "^3.1.2",
 		"pressure": "^2.2.0",
+		"socket.io-client": "^4.6.1",
 		"svelte-fa": "^3.0.3"
 	}
 }

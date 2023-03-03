@@ -4,9 +4,10 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faCopy } from '@fortawesome/free-regular-svg-icons';
+	import { io } from 'socket.io-client';
+	import { compute_rest_props } from 'svelte/internal';
 
 	let width = 1280;
 	let height = 720;
@@ -25,6 +26,8 @@
 			goto(`?${$page.url.searchParams.toString()}`);
 		}
 	}
+
+	const socket = io('https://pal-pad.codymitchell.dev');
 	
 	let sketch = (p5) => {
 		let currentLine = [];
@@ -95,11 +98,19 @@
 				return;
 			}
 
+
+			console.log('SOCKET EMIT: line')
 			console.log({
 				roomID,
 				color: color,
 				currentLine
 			})
+
+			socket.emit('line', {
+				roomID,
+				color: color,
+				currentLine
+			});
 
 			currentLine = [];
 		};
@@ -123,7 +134,28 @@
 
 		let clearButton = document.getElementById('clearButton');
 		clearButton.addEventListener('click', () => {
+			console.log("SOCKET EMIT: clear")
+			socket.emit('clear', roomID);
 			clearCanvas(p5);
+		});
+
+		// join the room
+		socket.emit('join', roomID);
+
+		// draws the previous lines on the server
+		socket.on('sketch', (data) => {
+			console.log('SOCKET: sketch')
+			console.log(data);
+		});
+
+		socket.on('clear', () => {
+			console.log('SOCKET: clear')
+			clearCanvas(p5);
+		});
+
+		socket.on('sync', (data) => {
+			console.log('SOCKET: sync')
+			console.log(data);
 		});
 	};
 </script>
