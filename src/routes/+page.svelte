@@ -1,6 +1,13 @@
 <script>
 	import P5 from 'p5-svelte';
 	import Pressure from 'pressure';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+	import Fa from 'svelte-fa/src/fa.svelte';
+	import { faCopy } from '@fortawesome/free-regular-svg-icons';
+	import { io } from 'socket.io-client';
+	import { compute_rest_props } from 'svelte/internal';
 
 	let width = 1280;
 	let height = 720;
@@ -8,8 +15,23 @@
 	let color = [0, 0, 0, 100];
 	let pressure = 0;
 	let paperTexture;
+	
+	let roomID;
+	if (browser) {
+			// check if the room urlParam is set, if not then generate a random room
+		roomID = $page.url.searchParams.get('room');
+		if (!roomID) {
+			roomID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+			$page.url.searchParams.set('room', roomID);
+			goto(`?${$page.url.searchParams.toString()}`);
+		}
+	}
 
+	const socket = io('https://pal-pad.codymitchell.dev');
+	
 	let sketch = (p5) => {
+		let currentLine = [];
+
 		const interpolateLine = (startX, startY, endX, endY, circleSize, numCircles) => {
 			let xDiff = endX - startX;
 			let yDiff = endY - startY;
@@ -58,6 +80,39 @@
 			}
 			p5.fill(color[0], color[1], color[2], color[3]);
 			interpolateLine(p5.pmouseX, p5.pmouseY, p5.mouseX, p5.mouseY, brushSize * (pressure + 1), 15);
+			
+			let pointData = {
+				startX: p5.pmouseX,
+				startY: p5.pmouseY,
+				endX: p5.mouseX,
+				endY: p5.mouseY,
+				size: brushSize * (pressure + 1)
+			};
+
+			currentLine.push(pointData);
+		};
+
+		p5.mouseReleased = () => {
+			// check that the mouse is on the canvas
+			if (p5.mouseX < 0 || p5.mouseX > width || p5.mouseY < 0 || p5.mouseY > height) {
+				return;
+			}
+
+
+			console.log('SOCKET EMIT: line')
+			console.log({
+				roomID,
+				color: color,
+				currentLine
+			})
+
+			socket.emit('line', {
+				roomID,
+				color: color,
+				currentLine
+			});
+
+			currentLine = [];
 		};
 
 		p5.keyPressed = () => {
@@ -79,7 +134,28 @@
 
 		let clearButton = document.getElementById('clearButton');
 		clearButton.addEventListener('click', () => {
+			console.log("SOCKET EMIT: clear")
+			socket.emit('clear', roomID);
 			clearCanvas(p5);
+		});
+
+		// join the room
+		socket.emit('join', roomID);
+
+		// draws the previous lines on the server
+		socket.on('sketch', (data) => {
+			console.log('SOCKET: sketch')
+			console.log(data);
+		});
+
+		socket.on('clear', () => {
+			console.log('SOCKET: clear')
+			clearCanvas(p5);
+		});
+
+		socket.on('sync', (data) => {
+			console.log('SOCKET: sync')
+			console.log(data);
 		});
 	};
 </script>
@@ -111,5 +187,10 @@
 	</div>
 	<div class="w-full flex justify-center items-center p-2">
 		<P5 {sketch} />
+	</div>
+	<div class="text-2xl">
+		<button class="text-blue-500" on:click={() => navigator.clipboard.writeText(`${window.location.origin}/?room=${roomID}`)}>
+			<Fa class="m-2" size="1.5x" icon={faCopy} />
+		</button>
 	</div>
 </div>
