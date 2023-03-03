@@ -24,6 +24,8 @@
 	}
 	
 	let sketch = (p5) => {
+		let currentLine = [];
+
 		const interpolateLine = (startX, startY, endX, endY, circleSize, numCircles) => {
 			let xDiff = endX - startX;
 			let yDiff = endY - startY;
@@ -73,19 +75,30 @@
 			p5.fill(color[0], color[1], color[2], color[3]);
 			interpolateLine(p5.pmouseX, p5.pmouseY, p5.mouseX, p5.mouseY, brushSize * (pressure + 1), 15);
 			
-			let lineData = {
+			let pointData = {
 				startX: p5.pmouseX,
 				startY: p5.pmouseY,
 				endX: p5.mouseX,
 				endY: p5.mouseY,
-				size: brushSize * (pressure + 1),
-				color: color
+				size: brushSize * (pressure + 1)
 			};
+
+			currentLine.push(pointData);
+		};
+
+		p5.mouseReleased = () => {
+			// check that the mouse is on the canvas
+			if (p5.mouseX < 0 || p5.mouseX > width || p5.mouseY < 0 || p5.mouseY > height) {
+				return;
+			}
 
 			console.log({
 				roomID,
-				lineData
+				color: color,
+				currentLine
 			})
+
+			currentLine = [];
 		};
 
 		p5.keyPressed = () => {
