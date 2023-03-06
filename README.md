@@ -1,8 +1,12 @@
 # Pal Pad
 
-A collaborative drawing app you can use in your browser!
+## A collaborative drawing app you can use in your browser!
 
 Try it out! [pal-pad-ui.vercel.app](https://pal-pad-ui.vercel.app/)
+
+Server code here: https://github.com/justinorringer/pal-pad-server
+
+See [our Trello](https://trello.com/b/SIDZ1Y4g/pal-pad) to track development!
 
 ## Developing
 
